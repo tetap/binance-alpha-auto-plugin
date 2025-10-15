@@ -1,0 +1,14 @@
+{
+  "name": "Tetap Alpha积分",
+  "version": "0.0.1",
+  "versionName": "0.0.1",
+  "versionCode": 1,
+  "description": "Tetap Alpha积分",
+  "isShowOverlay": true,
+  "needScreenCapture": false,
+  "packageName": "com.tetap.alpha",
+  "main": "index.html",
+  "index": "index.html",
+  "indexInOverlay": true,
+  "overlayTitle": "Tetap Alpha积分"
+}
