@@ -14,6 +14,7 @@ import {
   useTodayNoMulDealStorage,
 } from "./store/today-no-mul-deal-storage";
 import type { IOptions } from "./components/mode/type";
+import { AssistsX } from "assistsx-js";
 
 function App() {
   const [runing, setRuning] = useState(false);
@@ -67,6 +68,7 @@ function App() {
       secret: searchParams.get("secret") || "", // mfa 密钥
     };
     appendLog("启动成功，请进入App交易页面操作", "success");
+    appendLog("版本号: v1.0.1", "success");
     appendLog(
       `当前模式: ${options.mode === "order" ? "限价单" : "反向订单"}`,
       "success"
@@ -74,7 +76,7 @@ function App() {
     initTodayDealStorage();
     initTodayNoMulDealStorage();
     setOptions(options);
-    // AssistsX.launchApp("com.binance.dev");
+    AssistsX.launchApp("com.binance.dev");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

@@ -189,21 +189,17 @@ export const checkMfa = async (secret: string) => {
   )[0];
   if (priceParent) return true;
   while (true) {
-    let nodes = await AssistsXAsync.findByTags("android.widget.LinearLayout");
-    const nodeC = nodes[0];
-    const childrens = nodeC.getNodes();
-    const check =
-      childrens.find((c) => c.text.includes("验证您的身份")) ||
-      childrens.find((c) => c.viewId.includes("android.gms"));
+    await sleepToMs(100);
+    // let nodes = await AssistsXAsync.findByTags("android.widget.LinearLayout");
+    const check = (await AssistsXAsync.findByText("验证您的身份"))[0];
     if (check) {
       await AssistsXAsync.back();
       await sleepToMs(300);
-      nodes = await AssistsXAsync.getAllNodes();
+      // nodes = await AssistsXAsync.getAllNodes();
       await sleepToMs(1000);
     }
     // 判断是否验证
-    nodes = await AssistsXAsync.getAllNodes();
-    const next = nodes.find((c) => c.text === "我的通行密钥无法使用");
+    const next = (await AssistsXAsync.findByText("我的通行密钥无法使用"))[0];
     if (next && next.text === "我的通行密钥无法使用") {
       await next.clickNodeByGesture({
         clickDuration: Math.floor(Math.random() * (80 - 30 + 1)) + 30,
@@ -211,8 +207,11 @@ export const checkMfa = async (secret: string) => {
       await sleepToMs(100);
     }
     const code = (window as any).otplib.authenticator.generate(secret);
-    nodes = await AssistsXAsync.getAllNodes();
-    const input = nodes.find((c) => c.className === "android.widget.EditText");
+    // nodes = await AssistsXAsync.getAllNodes();
+    // const input = nodes.find((c) => c.className === "android.widget.EditText");
+    const input = (
+      await AssistsXAsync.findByTags("android.widget.EditText")
+    )[0];
     if (input) {
       input.setNodeText(code);
       await sleepToMs(2000);
@@ -507,6 +506,26 @@ export const scrollForward = async () => {
 };
 
 export const scrollPage = async (type: "forward" | "backward") => {
+  await AssistsXAsync.performLinearGesture(
+    { x: 100, y: 125 },
+    { x: 100, y: 0 },
+    { duration: 50 }
+  );
+  await AssistsXAsync.performLinearGesture(
+    { x: 100, y: 125 },
+    { x: 100, y: 0 },
+    { duration: 50 }
+  );
+  await AssistsXAsync.performLinearGesture(
+    { x: 100, y: 125 },
+    { x: 100, y: 0 },
+    { duration: 50 }
+  );
+  await AssistsXAsync.performLinearGesture(
+    { x: 100, y: 125 },
+    { x: 100, y: 0 },
+    { duration: 50 }
+  );
   const scrollView = (
     await AssistsXAsync.findById("com.binance.dev:id/2131439509")
   )[0];
