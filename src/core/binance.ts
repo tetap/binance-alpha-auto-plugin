@@ -240,6 +240,15 @@ export const checkOrder = async (timeout: number) => {
       const tab = layout.findById("com.binance.dev:id/2131441203")[0];
       if (!tab) throw new Error("未找到订单页面(tab)");
       const [tab1, tab2] = tab.getChildren();
+
+      const text = tab1.text;
+      const sizes = text.match(/\d+/g)?.map(Number);
+      if (!sizes?.length) throw new Error("sizes is null");
+      const size = sizes[0];
+      if (size === 0) {
+        return true;
+      }
+
       const curTab = i % 2 === 0 ? tab2 : tab1;
       await curTab.clickNodeByGesture({
         clickDuration: Math.floor(Math.random() * (80 - 30 + 1)) + 30,
