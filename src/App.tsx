@@ -174,8 +174,6 @@ function App() {
         await checkOrder((timeout - 2) * 1000); // 监听订单
 
         appendLog(`限价买单已成交 ${buyPrice} - ${amount}`, "success");
-
-        // await sleepToMs(sleepTime);
         // #endregion 买入流程
 
         // #region 使用兜底卖出即可
