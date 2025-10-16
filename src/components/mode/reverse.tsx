@@ -10,6 +10,8 @@ import {
   getPrice,
   setLimitTotal,
   setPrice,
+  openReverse,
+  setReversePrice,
 } from "@/core/binance";
 import { Button } from "../ui/button";
 import { useRef } from "react";
@@ -19,7 +21,7 @@ import dayjs from "dayjs";
 import { floor } from "lodash-es";
 import { type IPanelProps } from "./type";
 
-export const OrderMode = ({
+export const ReverseMode = ({
   setCurrentBalance,
   setStartBalance,
   runing,
@@ -59,6 +61,12 @@ export const OrderMode = ({
 
       const maxSleep = options.maxSleep ? Number(options.maxSleep) : 5;
 
+      const minDiscount = options.minDiscount
+        ? Number(options.minDiscount)
+        : 0.3; // 最低折扣 %
+
+      const maxDiscount = options.maxDiscount ? Number(options.maxDiscount) : 1; // 最高折扣 %
+
       for (let i = 0; i < runNum; i++) {
         const day = dayjs().utc().format("YYYY-MM-DD");
 
@@ -82,7 +90,10 @@ export const OrderMode = ({
         appendLog(`当前余额: ${balance}`, "info");
         if (!balance) throw new Error("获取余额失败");
 
+        await openReverse(); // 打开反向订单
+
         await sleepToMs(1000);
+
         if (!startStartBalance.current) {
           startStartBalance.current = true;
           setStartBalance(balance);
@@ -126,6 +137,19 @@ export const OrderMode = ({
         // 设置买入金额
         await setLimitTotal(amount);
 
+        // 计算反向订单价格 maxDiscount 和 minDiscount 都是百分比
+        const discount = floor(
+          (Number(maxDiscount) - Number(minDiscount)) * Math.random() +
+            Number(minDiscount),
+          2
+        );
+
+        // 卖出价格
+        const sellPrice = (Number(buyPrice) * (1 - discount / 100)).toString();
+
+        // 设置反向订单价格
+        await setReversePrice(sellPrice);
+
         await callSubmit(timeout * 1000);
 
         await checkMfa(options.secret);
@@ -139,8 +163,10 @@ export const OrderMode = ({
         appendLog(`限价买单已成交 ${buyPrice} - ${amount}`, "success");
         // #endregion 买入流程
 
-        // #region 使用兜底卖出即可
-        await backSell(api, symbol, options.secret, appendLog, timeout);
+        // 等待反向订单是否提交？
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+
+        await checkOrder(timeout * 1000); // 监听订单
 
         await sleepToMs(sleepTime);
         // #endregion 使用兜底卖出即可
@@ -177,7 +203,7 @@ export const OrderMode = ({
   return (
     <div className="flex-none pb-2 mt-2">
       <Button className="w-full" onClick={run}>
-        {runing ? "终止执行(限价单)" : "开始执行(限价单)"}
+        {runing ? "终止执行(反向订单)" : "开始执行(反向订单)"}
       </Button>
     </div>
   );

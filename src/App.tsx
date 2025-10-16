@@ -2,7 +2,8 @@ import { useLayoutEffect, useMemo, useState } from "react";
 import { Button } from "./components/ui/button";
 import { useLogger } from "./hooks/useLogger";
 import { cn } from "./lib/utils";
-import { type IOptions, OrderMode } from "./components/mode/order";
+import { OrderMode } from "./components/mode/order";
+import { ReverseMode } from "./components/mode/reverse";
 import {
   initTodayDealStorage,
   useTodayDealStorage,
@@ -12,6 +13,7 @@ import {
   initTodayNoMulDealStorage,
   useTodayNoMulDealStorage,
 } from "./store/today-no-mul-deal-storage";
+import type { IOptions } from "./components/mode/type";
 
 function App() {
   const [runing, setRuning] = useState(false);
@@ -46,7 +48,9 @@ function App() {
   useLayoutEffect(() => {
     const searchParams = new URLSearchParams(window.location.search);
     const options = {
-      mode: (searchParams.get("mode") || "order") as "reverse" | "order", // 运行类型
+      mode: (searchParams.get("mode") || "reverse") as "reverse" | "order", // 运行类型
+      minDiscount: searchParams.get("minDiscount") || "0.3", // 最低折扣 %
+      maxDiscount: searchParams.get("maxDiscount") || "1", // 最高折扣 %
       runType: (searchParams.get("runType") || "sum") as "sum" | "price", // 运行类型
       runNum: searchParams.get("runNum") || "30", // 运行模式 sum 次数
       runPrice: searchParams.get("runPrice") || "65536", // 运行模式 运行到指定金额
@@ -113,8 +117,20 @@ function App() {
 
       {render}
 
-      {options && (
+      {options?.mode === "order" && (
         <OrderMode
+          setCurrentBalance={setCurrentBalance}
+          setRuning={setRuning}
+          setStartBalance={setStartBalance}
+          startBalance={startBalance}
+          runing={runing}
+          appendLog={appendLog}
+          options={options}
+        />
+      )}
+
+      {options?.mode === "reverse" && (
+        <ReverseMode
           setCurrentBalance={setCurrentBalance}
           setRuning={setRuning}
           setStartBalance={setStartBalance}

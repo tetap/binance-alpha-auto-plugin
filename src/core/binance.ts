@@ -312,6 +312,7 @@ export const backSell = async (
       const price = await getPrice(symbol, api); // 获取价格
       if (!price) throw new Error("获取价格失败");
       await jumpToSell();
+      await closeReverse(); // 关闭反向
       const sellPrice = (Number(price) - Number(price) * 0.00008).toString();
       await setPrice(sellPrice); // 设置价格
       await setSellLimitTotal(); // 设置卖出数量
@@ -443,4 +444,46 @@ export const checkMarketStable = async (
     trend,
     message,
   };
+};
+
+export const closeReverse = async () => {
+  const eles = await AssistsXAsync.findById("com.binance.dev:id/2131429328");
+  if (!eles.length) throw new Error("未找到反向订单按钮");
+  const el = eles[0];
+  if (el.isChecked) {
+    await el.clickNodeByGesture({
+      clickDuration: Math.floor(Math.random() * (80 - 30 + 1)) + 30,
+    });
+  }
+  return el.isChecked;
+};
+
+export const openReverse = async () => {
+  const eles = await AssistsXAsync.findById("com.binance.dev:id/2131429328");
+  if (!eles.length) throw new Error("未找到反向订单按钮");
+  const el = eles[0];
+  if (!el.isChecked) {
+    await el.clickNodeByGesture({
+      clickDuration: Math.floor(Math.random() * (80 - 30 + 1)) + 30,
+    });
+  }
+  return el.isChecked;
+};
+
+export const setReversePrice = async (value: string) => {
+  const container = (
+    await AssistsXAsync.findById("com.binance.dev:id/2131431422")
+  )[0];
+  if (!container) throw new Error("未找到反向价格输入框");
+  const group = container.findByTags("android.view.ViewGroup")[0];
+  if (!group) throw new Error("未找到反向价格输入框 group");
+  const priceElm = group.findById("com.binance.dev:id/et_value")[0];
+  if (!priceElm) throw new Error("未找到反向价格输入框 priceElm");
+  await priceElm.clickNodeByGesture({ clickDuration: 30 });
+  const inputParent = priceElm.findById("com.binance.dev:id/2131431761")[0];
+  if (!inputParent) throw new Error("未找到反向价格输入框 inputParent");
+  const input = inputParent.findById("com.binance.dev:id/2131431181")[0];
+  if (!input) throw new Error("未找到反向价格输入框 input");
+  input.setNodeText(value);
+  await AssistsXAsync.back();
 };
