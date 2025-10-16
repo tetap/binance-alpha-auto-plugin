@@ -10,6 +10,8 @@ import {
   getPrice,
   setLimitTotal,
   setPrice,
+  scrollForward,
+  scrollPage,
 } from "@/core/binance";
 import { Button } from "../ui/button";
 import { useRef } from "react";
@@ -40,6 +42,8 @@ export const OrderMode = ({
     const api = options.api;
 
     try {
+      await scrollForward();
+
       const { symbol, mul } = await getAlphaId(api);
       appendLog(`获取到货币id: ${symbol} 积分乘数: ${mul}`, "info");
 
@@ -60,6 +64,8 @@ export const OrderMode = ({
       const maxSleep = options.maxSleep ? Number(options.maxSleep) : 5;
 
       for (let i = 0; i < runNum; i++) {
+        await scrollPage("backward");
+
         const day = dayjs().utc().format("YYYY-MM-DD");
 
         if (stopRef.current) {
@@ -130,7 +136,11 @@ export const OrderMode = ({
 
         await checkMfa(options.secret);
 
+        await scrollPage("forward");
+
         await checkOrder((timeout - 2) * 1000); // 监听订单
+
+        await scrollPage("backward");
 
         updateTodayDealStorage(day, (Number(amount) * mul).toString());
 

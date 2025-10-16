@@ -12,6 +12,8 @@ import {
   setPrice,
   openReverse,
   setReversePrice,
+  scrollForward,
+  scrollPage,
 } from "@/core/binance";
 import { Button } from "../ui/button";
 import { useRef } from "react";
@@ -42,6 +44,8 @@ export const ReverseMode = ({
     const api = options.api;
 
     try {
+      await scrollForward();
+
       const { symbol, mul } = await getAlphaId(api);
       appendLog(`获取到货币id: ${symbol} 积分乘数: ${mul}`, "info");
 
@@ -68,6 +72,8 @@ export const ReverseMode = ({
       const maxDiscount = options.maxDiscount ? Number(options.maxDiscount) : 1; // 最高折扣 %
 
       for (let i = 0; i < runNum; i++) {
+        await scrollPage("backward");
+
         const day = dayjs().utc().format("YYYY-MM-DD");
 
         if (stopRef.current) {
@@ -154,7 +160,11 @@ export const ReverseMode = ({
 
         await checkMfa(options.secret);
 
+        await scrollPage("forward");
+
         await checkOrder((timeout - 2) * 1000); // 监听订单
+
+        await scrollPage("backward");
 
         updateTodayDealStorage(day, (Number(amount) * mul).toString());
 
@@ -166,7 +176,11 @@ export const ReverseMode = ({
         // 等待反向订单是否提交？
         await new Promise((resolve) => setTimeout(resolve, 1000));
 
+        await scrollPage("forward");
+
         await checkOrder(timeout * 1000); // 监听订单
+
+        await scrollPage("backward");
 
         await sleepToMs(sleepTime);
         // #endregion 使用兜底卖出即可

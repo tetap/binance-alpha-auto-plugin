@@ -222,76 +222,82 @@ export const checkMfa = async (secret: string) => {
 };
 
 export const checkOrder = async (timeout: number) => {
-  let time = 0;
-  const sleep = 300;
-  let i = 0;
-  while (true) {
-    if (time >= timeout) {
-      break;
-    }
-    const container = (
-      await AssistsXAsync.findById("com.binance.dev:id/2131429833")
-    )[0];
-    if (!container) throw new Error("未找到订单页面(container)");
-    const parent = container.findById("com.binance.dev:id/2131440755")[0];
-    if (!parent) throw new Error("未找到订单页面(parent)");
-    const layout = parent.findByTags("android.widget.FrameLayout")[0];
-    if (!layout) throw new Error("未找到订单页面(layout");
-    const tab = layout.findById("com.binance.dev:id/2131441203")[0];
-    if (!tab) throw new Error("未找到订单页面(tab)");
-    const [tab1, tab2] = tab.getChildren();
-    const curTab = i % 2 === 0 ? tab2 : tab1;
-    await curTab.clickNodeByGesture({
-      clickDuration: Math.floor(Math.random() * (80 - 30 + 1)) + 30,
-    });
-    await sleepToMs(sleep);
-    const isok = await (async () => {
+  try {
+    let time = 0;
+    const sleep = 300;
+    let i = 0;
+    while (true) {
+      if (time >= timeout) {
+        break;
+      }
       const container = (
         await AssistsXAsync.findById("com.binance.dev:id/2131429833")
       )[0];
+      if (!container) throw new Error("未找到订单页面(container)");
       const parent = container.findById("com.binance.dev:id/2131440755")[0];
-      if (!parent) throw new Error("未找到订单页面");
+      if (!parent) throw new Error("未找到订单页面(parent)");
       const layout = parent.findByTags("android.widget.FrameLayout")[0];
-      if (!layout) throw new Error("未找到订单页面");
+      if (!layout) throw new Error("未找到订单页面(layout");
       const tab = layout.findById("com.binance.dev:id/2131441203")[0];
-      if (!tab) throw new Error("未找到订单页面");
-      const [tab1] = tab.getChildren();
-      const text = tab1.text;
-      const sizes = text.match(/\d+/g)?.map(Number);
-      if (!sizes?.length) throw new Error("sizes is null");
-      const size = sizes[0];
-      if (size === 0) {
-        return true;
-      }
-      return false;
-    })();
-    if (isok) {
-      break;
-    }
-    await new Promise((resolve) => setTimeout(resolve, sleep));
-    i++;
-    time += sleep;
-  }
-  // 最终兜底取消
-  const cancelBtn = await AssistsXAsync.findById("com.binance.dev:id/tvCancel");
-  // 无可取消订单 视为成功
-  if (!cancelBtn.length) return true;
-  const cancelAll = (await AssistsXAsync.findByText("撤销全部"))[0];
-  if (cancelAll) {
-    await cancelAll.clickNodeByGesture({
-      clickDuration: Math.floor(Math.random() * (80 - 30 + 1)) + 30,
-    });
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    const btn = (
-      await AssistsXAsync.findById("com.binance.dev:id/2131428678")
-    )[0];
-    if (btn) {
-      await btn.clickNodeByGesture({
+      if (!tab) throw new Error("未找到订单页面(tab)");
+      const [tab1, tab2] = tab.getChildren();
+      const curTab = i % 2 === 0 ? tab2 : tab1;
+      await curTab.clickNodeByGesture({
         clickDuration: Math.floor(Math.random() * (80 - 30 + 1)) + 30,
       });
-      throw new Error("订单超时");
+      await sleepToMs(sleep);
+      const isok = await (async () => {
+        const container = (
+          await AssistsXAsync.findById("com.binance.dev:id/2131429833")
+        )[0];
+        const parent = container.findById("com.binance.dev:id/2131440755")[0];
+        if (!parent) throw new Error("未找到订单页面");
+        const layout = parent.findByTags("android.widget.FrameLayout")[0];
+        if (!layout) throw new Error("未找到订单页面");
+        const tab = layout.findById("com.binance.dev:id/2131441203")[0];
+        if (!tab) throw new Error("未找到订单页面");
+        const [tab1] = tab.getChildren();
+        const text = tab1.text;
+        const sizes = text.match(/\d+/g)?.map(Number);
+        if (!sizes?.length) throw new Error("sizes is null");
+        const size = sizes[0];
+        if (size === 0) {
+          return true;
+        }
+        return false;
+      })();
+      if (isok) {
+        break;
+      }
+      await new Promise((resolve) => setTimeout(resolve, sleep));
+      i++;
+      time += sleep;
     }
-    await new Promise((resolve) => setTimeout(resolve, 500));
+    // 最终兜底取消
+    const cancelBtn = await AssistsXAsync.findById(
+      "com.binance.dev:id/tvCancel"
+    );
+    // 无可取消订单 视为成功
+    if (!cancelBtn.length) return true;
+    const cancelAll = (await AssistsXAsync.findByText("撤销全部"))[0];
+    if (cancelAll) {
+      await cancelAll.clickNodeByGesture({
+        clickDuration: Math.floor(Math.random() * (80 - 30 + 1)) + 30,
+      });
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      const btn = (
+        await AssistsXAsync.findById("com.binance.dev:id/2131428678")
+      )[0];
+      if (btn) {
+        await btn.clickNodeByGesture({
+          clickDuration: Math.floor(Math.random() * (80 - 30 + 1)) + 30,
+        });
+        throw new Error("订单超时");
+      }
+      await new Promise((resolve) => setTimeout(resolve, 500));
+    }
+  } catch (error: any) {
+    throw new Error(error);
   }
   throw new Error("订单超时");
 };
@@ -306,6 +312,7 @@ export const backSell = async (
 ) => {
   while (true) {
     try {
+      await scrollPage("backward");
       const isSell = await getIsSell();
       appendLog(`是否需要卖出：${isSell}`, "info");
       if (!isSell) return;
@@ -318,7 +325,9 @@ export const backSell = async (
       await setSellLimitTotal(); // 设置卖出数量
       await callSubmit(timeout * 1000); // 提交
       await checkMfa(secret); // 二次验证
+      await scrollPage("forward");
       await checkOrder((timeout - 2) * 1000); // 监听订单
+      await scrollPage("backward");
       appendLog(`限价卖单已成交 ${sellPrice}`, "success");
       await sleepToMs(1000);
     } catch (error: unknown) {
@@ -486,4 +495,25 @@ export const setReversePrice = async (value: string) => {
   if (!input) throw new Error("未找到反向价格输入框 input");
   input.setNodeText(value);
   await AssistsXAsync.back();
+};
+
+// 向下滚动 整体视窗
+export const scrollForward = async () => {
+  const scrollView = (
+    await AssistsXAsync.findById("com.binance.dev:id/2131436915")
+  )[0];
+  if (!scrollView) throw new Error("未找到订单页面(scrollView)");
+  await AssistsXAsync.scrollForward(scrollView);
+};
+
+export const scrollPage = async (type: "forward" | "backward") => {
+  const scrollView = (
+    await AssistsXAsync.findById("com.binance.dev:id/2131439509")
+  )[0];
+  if (!scrollView) throw new Error("未找到page页面(scrollView)");
+  if (type === "forward") {
+    await AssistsXAsync.scrollForward(scrollView);
+  } else {
+    await AssistsXAsync.scrollBackward(scrollView);
+  }
 };
