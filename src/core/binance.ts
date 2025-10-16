@@ -149,7 +149,7 @@ export const callSubmit = async (timeout: number) => {
   });
 
   let time = 0;
-  const sleep = 150;
+  const sleep = 100;
   let isNext = false;
   while (true) {
     if (time >= timeout) {
