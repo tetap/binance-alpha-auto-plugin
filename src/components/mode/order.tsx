@@ -19,6 +19,7 @@ import { updateTodayDealStorage } from "@/store/today-deal-storage";
 import { updateTodayNoMulDealStorage } from "@/store/today-no-mul-deal-storage";
 import dayjs from "dayjs";
 import { floor } from "lodash-es";
+import { AssistsXAsync } from "assistsx-js";
 import { type IPanelProps } from "./type";
 
 export const OrderMode = ({
@@ -64,96 +65,108 @@ export const OrderMode = ({
       const maxSleep = options.maxSleep ? Number(options.maxSleep) : 5;
 
       for (let i = 0; i < runNum; i++) {
-        await scrollPage("backward");
+        try {
+          await scrollPage("backward");
 
-        const day = dayjs().utc().format("YYYY-MM-DD");
+          const day = dayjs().utc().format("YYYY-MM-DD");
 
-        if (stopRef.current) {
-          appendLog("执行中止", "error");
-          break;
+          if (stopRef.current) {
+            appendLog("执行中止", "error");
+            break;
+          }
+          const sleepTime =
+            Math.floor(Math.random() * (maxSleep - minSleep + 1) + minSleep) *
+            1000;
+
+          appendLog(`当前轮次: ${i + 1} 随机等待时长${sleepTime}ms`, "info");
+
+          // #region 兜底策略
+          // 前往卖出
+          await backSell(api, symbol, options.secret, appendLog, timeout);
+          // #endregion 兜底策略
+
+          // #region 获取余额
+          const balance = await getBalance();
+          appendLog(`当前余额: ${balance}`, "info");
+          if (!balance) throw new Error("获取余额失败");
+
+          await sleepToMs(1000);
+          if (!startStartBalance.current) {
+            startStartBalance.current = true;
+            setStartBalance(balance);
+          }
+          setCurrentBalance(balance);
+          // #endregion 获取余额
+
+          // #region 买入流程
+          const stable = await checkMarketStable(api, symbol);
+
+          if (!stable.stable) {
+            appendLog(stable.message, "error");
+            i--;
+            await new Promise((resolve) => setTimeout(resolve, sleepTime));
+            continue;
+          } else {
+            appendLog(stable.message, "success");
+          }
+
+          let buyPrice = await getPrice(symbol, api);
+
+          appendLog(`获取到买入价格: ${buyPrice}`, "info");
+
+          buyPrice =
+            stable.trend === "上涨趋势"
+              ? (Number(buyPrice) + Number(buyPrice) * 0.0001).toString()
+              : buyPrice; // 调整买入价
+
+          await setPrice(buyPrice);
+
+          // 计算买入金额
+          const amount =
+            options.orderAmountMode === "Fixed"
+              ? options.amount
+              : floor(
+                  (Number(options.maxAmount) - Number(options.minAmount)) *
+                    Math.random() +
+                    Number(options.minAmount),
+                  2
+                ).toString();
+          // 设置买入金额
+          await setLimitTotal(amount);
+
+          await callSubmit(timeout * 1000);
+
+          await checkMfa(options.secret);
+
+          await scrollPage("forward");
+
+          await checkOrder((timeout - 2) * 1000); // 监听订单
+
+          await scrollPage("backward");
+
+          updateTodayDealStorage(day, (Number(amount) * mul).toString());
+
+          updateTodayNoMulDealStorage(day, amount);
+
+          appendLog(`限价买单已成交 ${buyPrice} - ${amount}`, "success");
+          // #endregion 买入流程
+
+          // #region 使用兜底卖出即可
+          await backSell(api, symbol, options.secret, appendLog, timeout);
+
+          await sleepToMs(sleepTime);
+          // #endregion 使用兜底卖出即可
+        } catch (error) {
+          if (error instanceof Error) {
+            appendLog(error.message, "error");
+            if (
+              error.message.includes("undefined") ||
+              error.message.includes("未找到")
+            ) {
+              await AssistsXAsync.back();
+            }
+          }
         }
-        const sleepTime =
-          Math.floor(Math.random() * (maxSleep - minSleep + 1) + minSleep) *
-          1000;
-
-        appendLog(`当前轮次: ${i + 1} 随机等待时长${sleepTime}ms`, "info");
-
-        // #region 兜底策略
-        // 前往卖出
-        await backSell(api, symbol, options.secret, appendLog, timeout);
-        // #endregion 兜底策略
-
-        // #region 获取余额
-        const balance = await getBalance();
-        appendLog(`当前余额: ${balance}`, "info");
-        if (!balance) throw new Error("获取余额失败");
-
-        await sleepToMs(1000);
-        if (!startStartBalance.current) {
-          startStartBalance.current = true;
-          setStartBalance(balance);
-        }
-        setCurrentBalance(balance);
-        // #endregion 获取余额
-
-        // #region 买入流程
-        const stable = await checkMarketStable(api, symbol);
-
-        if (!stable.stable) {
-          appendLog(stable.message, "error");
-          i--;
-          await new Promise((resolve) => setTimeout(resolve, sleepTime));
-          continue;
-        } else {
-          appendLog(stable.message, "success");
-        }
-
-        let buyPrice = await getPrice(symbol, api);
-
-        appendLog(`获取到买入价格: ${buyPrice}`, "info");
-
-        buyPrice =
-          stable.trend === "上涨趋势"
-            ? (Number(buyPrice) + Number(buyPrice) * 0.0001).toString()
-            : buyPrice; // 调整买入价
-
-        await setPrice(buyPrice);
-
-        // 计算买入金额
-        const amount =
-          options.orderAmountMode === "Fixed"
-            ? options.amount
-            : floor(
-                (Number(options.maxAmount) - Number(options.minAmount)) *
-                  Math.random() +
-                  Number(options.minAmount),
-                2
-              ).toString();
-        // 设置买入金额
-        await setLimitTotal(amount);
-
-        await callSubmit(timeout * 1000);
-
-        await checkMfa(options.secret);
-
-        await scrollPage("forward");
-
-        await checkOrder((timeout - 2) * 1000); // 监听订单
-
-        await scrollPage("backward");
-
-        updateTodayDealStorage(day, (Number(amount) * mul).toString());
-
-        updateTodayNoMulDealStorage(day, amount);
-
-        appendLog(`限价买单已成交 ${buyPrice} - ${amount}`, "success");
-        // #endregion 买入流程
-
-        // #region 使用兜底卖出即可
-        await backSell(api, symbol, options.secret, appendLog, timeout);
-
-        await sleepToMs(sleepTime);
-        // #endregion 使用兜底卖出即可
       }
 
       // #region 兜底策略
