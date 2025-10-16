@@ -196,8 +196,6 @@ export const checkMfa = async (secret: string) => {
     const check = (await AssistsXAsync.findByText("验证您的身份"))[0];
     if (check) {
       await AssistsXAsync.back();
-      await sleepToMs(300);
-      // nodes = await AssistsXAsync.getAllNodes();
       await sleepToMs(1000);
     }
     // 判断是否验证
