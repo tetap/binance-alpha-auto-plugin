@@ -68,7 +68,7 @@ function App() {
       secret: searchParams.get("secret") || "", // mfa 密钥
     };
     appendLog("启动成功，请进入App交易页面操作", "success");
-    appendLog("版本号: v1.0.2", "success");
+    appendLog("版本号: v1.0.3", "success");
     appendLog(
       `当前模式: ${options.mode === "order" ? "限价单" : "反向订单"}`,
       "success"
