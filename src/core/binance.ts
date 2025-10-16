@@ -215,7 +215,7 @@ export const checkMfa = async (secret: string) => {
     const input = nodes.find((c) => c.className === "android.widget.EditText");
     if (input) {
       input.setNodeText(code);
-      await sleepToMs(1000);
+      await sleepToMs(2000);
       return true;
     }
   }
