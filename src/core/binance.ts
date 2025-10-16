@@ -188,6 +188,8 @@ export const checkMfa = async (secret: string) => {
     await AssistsXAsync.findById("com.binance.dev:id/2131431440")
   )[0];
   if (priceParent) return true;
+  await AssistsXAsync.getAllNodes();
+  await AssistsXAsync.clickByGesture(100, 100, 100);
   while (true) {
     await sleepToMs(100);
     // let nodes = await AssistsXAsync.findByTags("android.widget.LinearLayout");
