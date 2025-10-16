@@ -208,7 +208,7 @@ export const checkMfa = async (secret: string) => {
       await next.clickNodeByGesture({
         clickDuration: Math.floor(Math.random() * (80 - 30 + 1)) + 30,
       });
-      await sleepToMs(300);
+      await sleepToMs(100);
     }
     const code = (window as any).otplib.authenticator.generate(secret);
     nodes = await AssistsXAsync.getAllNodes();
