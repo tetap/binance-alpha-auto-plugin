@@ -46,6 +46,7 @@ function App() {
   useLayoutEffect(() => {
     const searchParams = new URLSearchParams(window.location.search);
     const options = {
+      mode: (searchParams.get("mode") || "order") as "reverse" | "order", // 运行类型
       runType: (searchParams.get("runType") || "sum") as "sum" | "price", // 运行类型
       runNum: searchParams.get("runNum") || "30", // 运行模式 sum 次数
       runPrice: searchParams.get("runPrice") || "65536", // 运行模式 运行到指定金额
@@ -62,6 +63,10 @@ function App() {
       secret: searchParams.get("secret") || "", // mfa 密钥
     };
     appendLog("启动成功，请进入App交易页面操作", "success");
+    appendLog(
+      `当前模式: ${options.mode === "order" ? "限价单" : "反向订单"}`,
+      "success"
+    );
     initTodayDealStorage();
     initTodayNoMulDealStorage();
     setOptions(options);

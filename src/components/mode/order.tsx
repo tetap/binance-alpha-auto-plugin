@@ -30,6 +30,7 @@ export interface IPanelProps {
 }
 
 export interface IOptions {
+  mode: "reverse" | "order";
   runType: "sum" | "price";
   runNum: string;
   runPrice: string;
