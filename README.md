@@ -1,73 +1,55 @@
-# React + TypeScript + Vite
+<div align="center">
+  <picture>
+      <img alt="Logo" src="./docs/app.png" />
+  </picture>
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## 🚀 邀请链接 [点击直达](https://accounts.maxweb.black/register?ref=TETAP)
 
-Currently, two official plugins are available:
+## 项目介绍
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+一个基于 Chrome 扩展的 Binance Alpha 流水刷取工具，专为刷交易流水和获取空投积分设计。通过反向交易操作和监控价格，自动操作交易，同时记录操作日志，帮助用户快速积累积分。
 
-## React Compiler
+</div>
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
 
-## Expanding the ESLint configuration
+## 更多版本
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+Android - [Github](https://github.com/tetap/binance-alpha-auto-android)
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+Chrome Extension - [Github](https://github.com/tetap/binance-alpha-auto-chrome-extensions)
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## 功能特点
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+- **流水刷取**：自动操作交易，快速累计 Alpha 流水。
+- **空投积分**：通过流水刷取帮助获取空投积分。
+- **反向订单**：可设置小数点保留和反向价格，安全生成流水。
+- **价格波动检测**：连续监控价格，支持保守模式，防止异常波动。
+- **日志输出**：实时显示每轮操作日志，方便追踪流水和积分情况。
+- **操作损耗统计**：显示每轮操作对账户余额的影响。
+- **多轮操作支持**：可设置循环次数，一键生成多轮流水。
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## 详细说明
+[点击查看](https://jcna3m5r8klj.feishu.cn/drive/folder/OUNgfvBnKlZtqBd84wCc356ynDd?from=from_copylink)
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## 💰 赞助支持
+
+您的每一份支持都是我们前进的动力
+一杯Coffee的微信赞赏
+
+感谢所有的支持者，得到你们的支持我将会更加完善开源库的能力！ 🚀
+
+<picture>
+    <img alt="Logo" src="./docs/wechat.jpg" />
+</picture>
+
+## 进群交流
+
+有任何问题哦度可以在issues反馈，或者加入我的qq群反馈。
+
+点击链接加入群聊：https://qm.qq.com/q/sxomf5yebY
+
+<picture>
+    <img alt="Logo" src="./docs/qrcode.jpg" />
+</picture>
+
