@@ -187,7 +187,6 @@ export const checkMfa = async (secret: string) => {
   const priceParent = (
     await AssistsXAsync.findById("com.binance.dev:id/2131431440")
   )[0];
-  console.log("check mfa?", priceParent);
   if (priceParent) return true;
   while (true) {
     let nodes = await AssistsXAsync.findByTags("android.widget.LinearLayout");
@@ -222,16 +221,14 @@ export const checkMfa = async (secret: string) => {
   }
 };
 
-export const checkOrder = async (keywrod: string, timeout: number) => {
-  console.log("checkorder by ", keywrod);
+export const checkOrder = async (timeout: number) => {
   let time = 0;
   const sleep = 300;
+  let i = 0;
   while (true) {
     if (time >= timeout) {
       break;
     }
-    await new Promise((resolve) => setTimeout(resolve, sleep));
-    time += sleep;
     const container = (
       await AssistsXAsync.findById("com.binance.dev:id/2131429833")
     )[0];
@@ -242,11 +239,8 @@ export const checkOrder = async (keywrod: string, timeout: number) => {
     const tab = layout.findById("com.binance.dev:id/2131441203")[0];
     if (!tab) throw new Error("未找到订单页面");
     const [tab1, tab2] = tab.getChildren();
-    await tab2.clickNodeByGesture({
-      clickDuration: Math.floor(Math.random() * (80 - 30 + 1)) + 30,
-    });
-    await sleepToMs(sleep);
-    await tab1.clickNodeByGesture({
+    const curTab = i % 2 === 0 ? tab2 : tab1;
+    await curTab.clickNodeByGesture({
       clickDuration: Math.floor(Math.random() * (80 - 30 + 1)) + 30,
     });
     await sleepToMs(sleep);
@@ -273,6 +267,9 @@ export const checkOrder = async (keywrod: string, timeout: number) => {
     if (isok) {
       break;
     }
+    await new Promise((resolve) => setTimeout(resolve, sleep));
+    i++;
+    time += sleep;
   }
   // 最终兜底取消
   const cancelBtn = await AssistsXAsync.findById("com.binance.dev:id/tvCancel");
@@ -319,7 +316,7 @@ export const backSell = async (
       await setSellLimitTotal(); // 设置卖出数量
       await callSubmit(timeout * 1000); // 提交
       await checkMfa(secret); // 二次验证
-      await checkOrder("卖单", timeout * 1000); // 监听订单
+      await checkOrder((timeout - 2) * 1000); // 监听订单
       appendLog(`限价卖单已成交 ${sellPrice}`, "success");
       await sleepToMs(1000);
     } catch (error: unknown) {

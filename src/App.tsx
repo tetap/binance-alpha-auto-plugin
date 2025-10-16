@@ -70,7 +70,7 @@ function App() {
     };
     appendLog("启动成功，请进入App交易页面操作", "success");
     optionRef.current = options;
-    AssistsX.launchApp('com.binance.dev')
+    AssistsX.launchApp("com.binance.dev");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -171,7 +171,7 @@ function App() {
 
         await checkMfa(options.secret);
 
-        await checkOrder("买单", timeout * 1000); // 监听订单
+        await checkOrder((timeout - 2) * 1000); // 监听订单
 
         appendLog(`限价买单已成交 ${buyPrice} - ${amount}`, "success");
 
