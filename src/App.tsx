@@ -16,6 +16,7 @@ import {
 } from "./core/binance";
 import { cn } from "./lib/utils";
 import { floor } from "lodash-es";
+import { AssistsX } from "assistsx-js";
 
 interface IOptions {
   runType: "sum" | "price";
@@ -68,9 +69,8 @@ function App() {
       secret: searchParams.get("secret") || "", // mfa 密钥
     };
     appendLog("启动成功，请进入App交易页面操作", "success");
-    appendLog("当前运行参数: ", "info");
-    appendLog(JSON.stringify(options), "info");
     optionRef.current = options;
+    AssistsX.launchApp('com.binance.dev')
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
