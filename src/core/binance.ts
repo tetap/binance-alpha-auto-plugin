@@ -233,7 +233,6 @@ export const checkOrder = async (timeout: number) => {
       await AssistsXAsync.findById("com.binance.dev:id/2131429833")
     )[0];
     if (!container) throw new Error("未找到订单页面(container)");
-    container.scrollBackward();
     const parent = container.findById("com.binance.dev:id/2131440755")[0];
     if (!parent) throw new Error("未找到订单页面(parent)");
     const layout = parent.findByTags("android.widget.FrameLayout")[0];
