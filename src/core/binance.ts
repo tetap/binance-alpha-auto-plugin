@@ -232,7 +232,7 @@ export const checkOrder = async (timeout: number) => {
     const container = (
       await AssistsXAsync.findById("com.binance.dev:id/2131429833")
     )[0];
-    if(!container) throw new Error("未找到订单页面(container)");
+    if (!container) throw new Error("未找到订单页面(container)");
     container.scrollBackward();
     const parent = container.findById("com.binance.dev:id/2131440755")[0];
     if (!parent) throw new Error("未找到订单页面(parent)");
@@ -290,7 +290,7 @@ export const checkOrder = async (timeout: number) => {
       await btn.clickNodeByGesture({
         clickDuration: Math.floor(Math.random() * (80 - 30 + 1)) + 30,
       });
-      return true;
+      throw new Error("订单超时");
     }
     await new Promise((resolve) => setTimeout(resolve, 500));
   }
