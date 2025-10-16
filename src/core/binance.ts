@@ -232,12 +232,14 @@ export const checkOrder = async (timeout: number) => {
     const container = (
       await AssistsXAsync.findById("com.binance.dev:id/2131429833")
     )[0];
+    if(!container) throw new Error("未找到订单页面(container)");
+    container.scrollBackward();
     const parent = container.findById("com.binance.dev:id/2131440755")[0];
-    if (!parent) throw new Error("未找到订单页面");
+    if (!parent) throw new Error("未找到订单页面(parent)");
     const layout = parent.findByTags("android.widget.FrameLayout")[0];
-    if (!layout) throw new Error("未找到订单页面");
+    if (!layout) throw new Error("未找到订单页面(layout");
     const tab = layout.findById("com.binance.dev:id/2131441203")[0];
-    if (!tab) throw new Error("未找到订单页面");
+    if (!tab) throw new Error("未找到订单页面(tab)");
     const [tab1, tab2] = tab.getChildren();
     const curTab = i % 2 === 0 ? tab2 : tab1;
     await curTab.clickNodeByGesture({
