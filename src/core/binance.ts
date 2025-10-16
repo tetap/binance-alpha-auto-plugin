@@ -512,21 +512,6 @@ export const scrollPage = async (type: "forward" | "backward") => {
     { x: 100, y: 0 },
     { duration: 50 }
   );
-  await AssistsXAsync.performLinearGesture(
-    { x: 100, y: 125 },
-    { x: 100, y: 0 },
-    { duration: 50 }
-  );
-  await AssistsXAsync.performLinearGesture(
-    { x: 100, y: 125 },
-    { x: 100, y: 0 },
-    { duration: 50 }
-  );
-  await AssistsXAsync.performLinearGesture(
-    { x: 100, y: 125 },
-    { x: 100, y: 0 },
-    { duration: 50 }
-  );
   const scrollView = (
     await AssistsXAsync.findById("com.binance.dev:id/2131439509")
   )[0];
