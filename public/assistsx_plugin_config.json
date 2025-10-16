@@ -5,7 +5,7 @@
   "versionCode": 1,
   "description": "Tetap Alpha积分",
   "isShowOverlay": true,
-  "needScreenCapture": false,
+  "needScreenCapture": true,
   "packageName": "com.tetap.alpha",
   "main": "index.html",
   "index": "index.html",

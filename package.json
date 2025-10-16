@@ -5,24 +5,28 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build && node --experimental-strip-types ./gh.ts",
+    "build": "vite build && node --experimental-strip-types ./gh.ts",
     "lint": "eslint .",
     "preview": "vite preview"
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.2.3",
     "@tailwindcss/vite": "^4.1.14",
+    "assistsx-js": "^0.0.2021",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "gh-pages": "^6.3.0",
+    "lodash-es": "^4.17.21",
     "lucide-react": "^0.545.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
+    "react-router-dom": "^7.9.4",
     "tailwind-merge": "^3.3.1",
     "tailwindcss": "^4.1.14"
   },
   "devDependencies": {
     "@eslint/js": "^9.36.0",
+    "@types/lodash-es": "^4.17.12",
     "@types/node": "^24.7.2",
     "@types/react": "^19.1.16",
     "@types/react-dom": "^19.1.9",
